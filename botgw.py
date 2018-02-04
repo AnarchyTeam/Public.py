@@ -21,37 +21,48 @@ print "login success"
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-helpMessage ="""_________________________________
-
-Bot Publik INSAN MUCHTADI.S v 1.2
-==========BotMenu===========
-
-Apakah (seperti kerang ajaib)
-kedapkedip = coba aja
-Dosa @(by tag) = Buat lucu2an
-Pahala @(by tag) = Buat lucu2an
-Steal dp @(by tag) = meliahat dp
-Steal home @(by tag) = melihat home
-/say = teks ke suara
-/set > /tes Untuk Cek Sider
-/tagall = Tag semua member
-/tid = translate ing > ind
-/ten = translate ind > ing
-/gcreator = Menunjukkan pembuat grup
-/ginfo = Info grup
-/cancel = Membatalkan semua undanganan
-/ourl = Invite by link on
-/curl = Invite by link off
-/help = Menampilkan keyword
-/keluar = Bot meninggalkan grup
-/musik <penyanyi> <judul>
-
-==========BotCreator==========
-
-Suport By:>>>>>INSAN.M,S<<<<<<
-
-==>"Instagram.com/insan.m.s014"<==
-_________________________________
+helpMessage ="""
+BOT PUBLIC ANARCHY
+╔═══════════════════════
+╠[-]Me
+╠[-]/myid
+╠[-]/cuaca
+╠[-]/apakah 
+╠[-]/kedapkedip
+╠[-]/dosa @
+╠[-]/pahala @
+╠[-]/steal dp @
+╠[-]/steal home @
+╠[-]/say 
+╠[-]/set 
+╠[-]/tagall 
+╠[-]/gcreator 
+╠[-]/ginfo 
+╠[-]/cancel
+╠[-]/ourl 
+╠[-]/curl 
+╠[-]/help
+╠[-]/keluar
+╠[-]/musik
+╠[-]/info saya
+╠[-]/image
+╠[-]/youtube
+╠[-]/image group
+╠[-]/lirik
+╠[-]/zodiak
+╠[-]/tr-id
+╠[-]/tr-en
+╠[-]/tr-th
+╠[-]/tr-ja
+╠[-]/tr-ms
+╠[-]/tr-it
+╠[-]/tr-my
+╠[-]/tr-af
+╠[-]/tr-sq
+╠[-]/tr-am
+╠[-]/tr-ar
+╠[-]/tr-hy
+╚════════════════════════
 """
 
 
@@ -60,6 +71,7 @@ mid = cl.getProfile().mid
 
 Bots=[mid,"u7eacf1df769225a00ec981cbd5830e23"]
 admin=["ub76a0153a283da9a1443dfb043181335"]
+adminsa=[""]
 wait = {
     'contact':False,
     'autoJoin':True,
@@ -117,6 +129,289 @@ def NOTIFIED_READ_MESSAGE(op):
     except:
         pass
 
+mulai = time.time()
+
+agent = {'User-Agent' : "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30)"}
+
+def translate(to_translate, to_language="auto", language="auto"):
+    bahasa_awal = "auto"
+    bahasa_tujuan = to_language
+    kata = to_translate
+    url = 'https://translate.google.com/m?sl=%s&tl=%s&ie=UTF-8&prev=_m&q=%s' % (bahasa_awal, bahasa_tujuan, kata.replace(" ", "+"))
+    agent = {'User-Agent':'Mozilla/5.0'}
+    cari_hasil = 'class="t0">'
+    request = urllib2.Request(url, headers=agent)
+    page = urllib2.urlopen(request).read()
+    result = page[page.find(cari_hasil)+len(cari_hasil):]
+    result = result.split("<")[0]
+    return result
+
+def download_page(url):
+    version = (3,0)
+    cur_version = sys.version_info
+    if cur_version >= version:     #If the Current Version of Python is 3.0 or above
+        import urllib,request    #urllib library for Extracting web pages
+        try:
+            headers = {}
+            headers['User-Agent'] = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
+            req = urllib,request.Request(url, headers = headers)
+            resp = urllib,request.urlopen(req)
+            respData = str(resp.read())
+            return respData
+        except Exception as e:
+            print(str(e))
+    else:                        #If the Current Version of Python is 2.x
+        import urllib2
+        try:
+            headers = {}
+            headers['User-Agent'] = "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.27 Safari/537.17"
+            req = urllib2.Request(url, headers = headers)
+            response = urllib2.urlopen(req)
+            page = response.read()
+            return page
+        except:
+            return"Page Not found"
+
+#Finding 'Next Image' from the given raw page
+def _images_get_next_item(s):
+    start_line = s.find('rg_di')
+    if start_line == -1:    #If no links are found then give an error!
+        end_quote = 0
+        link = "no_links"
+        return link, end_quote
+    else:
+        start_line = s.find('"class="rg_meta"')
+        start_content = s.find('"ou"',start_line+90)
+        end_content = s.find(',"ow"',start_content-90)
+        content_raw = str(s[start_content+6:end_content-1])
+        return content_raw, end_content
+
+#Getting all links with the help of '_images_get_next_image'
+def _images_get_all_items(page):
+    items = []
+    while True:
+        item, end_content = _images_get_next_item(page)
+        if item == "no_links":
+            break
+        else:
+            items.append(item)      #Append all the links in the list named 'Links'
+            time.sleep(0.1)        #Timer could be used to slow down the request for image downloads
+            page = page[end_content:]
+    return items
+
+
+def yt(query):
+    with requests.session() as s:
+         isi = []
+         if query == "":
+             query = "S1B tanysyz"
+         s.headers['user-agent'] = 'Mozilla/5.0'
+         url    = 'http://www.youtube.com/results'
+         params = {'search_query': query}
+         r    = s.get(url, params=params)
+         soup = BeautifulSoup(r.content, 'html5lib')
+         for a in soup.select('.yt-lockup-title > a[title]'):
+            if '&list=' not in a['href']:
+                if 'watch?v' in a['href']:
+                    b = a['href'].replace('watch?v=', '')
+                    isi += ['youtu.be' + b]
+         return isi
+
+def waktu(secs):
+    mins, secs = divmod(secs,60)
+    hours, mins = divmod(mins,60)
+    return '%02d Jam %02d Menit %02d Detik' % (hours, mins, secs)
+
+def upload_tempimage(client):
+     '''
+         Upload a picture of a kitten. We don't ship one, so get creative!
+     '''
+     config = {
+         'album': album,
+         'name':  'bot auto upload',
+         'title': 'bot auto upload',
+         'description': 'bot auto upload'
+     }
+
+     print("Uploading image... ")
+     image = client.upload_from_path(image_path, config=config, anon=False)
+     print("Done")
+     print()
+
+     return image
+
+
+def sendMessage(to, text, contentMetadata={}, contentType=0):
+    mes = Message()
+    mes.to, mes.from_ = to, profile.mid
+    mes.text = text
+    mes.contentType, mes.contentMetadata = contentType, contentMetadata
+    if to not in messageReq:
+        messageReq[to] = -1
+    messageReq[to] += 1
+
+
+def sendMessage(to, text, contentMetadata={}, contentType=0):
+    mes = Message()
+    mes.to, mes.from_ = to, profile.mid
+    mes.text = text
+    mes.contentType, mes.contentMetadata = contentType, contentMetadata
+    if to not in messageReq:
+        messageReq[to] = -1
+    messageReq[to] += 1
+
+def sendImage(self, to_, path):
+      M = Message(to=to_,contentType = 1)
+      M.contentMetadata = None
+      M.contentPreview = None
+      M_id = self.Talk.client.sendMessage(0,M).id
+      files = {
+         'file': open(path, 'rb'),
+      }
+      params = {
+         'name': 'media',
+         'oid': M_id,
+         'size': len(open(path, 'rb').read()),
+         'type': 'image',
+         'ver': '1.0',
+      }
+      data = {
+         'params': json.dumps(params)
+      }
+      r = self.post_content('https://os.line.naver.jp/talk/m/upload.nhn', data=data, files=files)
+      if r.status_code != 201:
+         raise Exception('Upload image failure.')
+      return True
+
+def sendImageWithURL(self, to_, url):
+      path = '%s/pythonLine-%i.data' % (tempfile.gettempdir(), randint(0, 9))
+      r = requests.get(url, stream=True)
+      if r.status_code == 200:
+         with open(path, 'w') as f:
+            shutil.copyfileobj(r.raw, f)
+      else:
+         raise Exception('Download image failure.')
+      try:
+         self.sendImage(to_, path)
+      except Exception as e:
+         raise e
+
+def restart_program():
+    python = sys.executable
+    os.execl(python, python, * sys.argv)
+
+def post_content(self, urls, data=None, files=None):
+        return self._session.post(urls, headers=self._headers, data=data, files=files)
+
+def sendMessage(to, text, contentMetadata={}, contentType=0):
+    mes = Message()
+    mes.to, mes.from_ = to, profile.mid
+    mes.text = text
+    mes.contentType, mes.contentMetadata = contentType, contentMetadata
+    if to not in messageReq:
+        messageReq[to] = -1
+    messageReq[to] += 1
+
+def NOTIFIED_READ_MESSAGE(op):
+    try:
+        if op.param1 in wait2['readPoint']:
+            Name = cl.getContact(op.param2).displayName
+            if Name in wait2['readMember'][op.param1]:
+                pass
+            else:
+                wait2['readMember'][op.param1] += "\n9§9" + Name
+                wait2['ROM'][op.param1][op.param2] = "9§9" + Name
+        else:
+            pass
+    except:
+        pass
+
+def sendAudio(self, to_, path):
+        M = Message(to=to_, text=None, contentType = 3)
+        M_id = self.Talk.client.sendMessage(0,M).id
+        files = {
+            'file': open(path, 'rb'),
+        }
+        params = {
+            'name': 'media',
+            'oid': M_id,
+            'size': len(open(path, 'rb').read()),
+            'type': 'audio',
+            'ver': '1.0',
+        }
+        data = {
+            'params': json.dumps(params)
+        }
+
+        r = self.post_content('https://os.line.naver.jp/talk/m/upload.nhn', data=data, files=files)
+        print r
+        if r.status_code != 201:
+            raise Exception('Upload audio failure.')
+
+
+def sendAudioWithURL(self, to_, url):
+      path = '%s/pythonLine-%i.data' % (tempfile.gettempdir(), randint(0, 9))
+      r = requests.get(url, stream=True)
+      if r.status_code == 200:
+         with open(path, 'w') as f:
+            shutil.copyfileobj(r.raw, f)
+      else:
+         raise Exception('Download audio failure.')
+      try:
+         self.sendAudio(to_, path)
+      except Exception as e:
+            raise e
+
+def sendVoice(self, to_, path):
+        M = Message(to=to_, text=None, contentType = 3)
+        M.contentPreview = None
+        M_id = self._client.sendMessage(0,M).id
+        files = {
+            'file': open(path, 'rb'),
+        }
+        params = {
+            'name': 'voice_message',
+            'oid': M_id,
+            'size': len(open(path, 'rb').read()),
+            'type': 'audio',
+            'ver': '1.0',
+        }
+        data = {
+            'params': json.dumps(params)
+        }
+        r = self.post_content('https://os.line.naver.jp/talk/m/upload.nhn', data=data, files=files)
+        if r.status_code != 201:
+            raise Exception('Upload voice failure.')
+        return True
+
+
+
+def mention(to,nama):
+    aa = ""
+    bb = ""
+    strt = int(12)
+    akh = int(12)
+    nm = nama
+    #print nm
+    for mm in nm:
+        akh = akh + 2
+        aa += """{"S":"""+json.dumps(str(strt))+""","E":"""+json.dumps(str(akh))+""","M":"""+json.dumps(mm)+"},"""
+        strt = strt + 6
+        akh = akh + 4
+        bb += "► @c \n"
+    aa = (aa[:int(len(aa)-1)])
+    msg = Message()
+    msg.to = to
+    msg.text = "「Mention」\n"+bb
+    msg.contentMetadata = {'MENTION':'{"MENTIONEES":['+aa+']}','EMTVER':'4'}
+    #print msg
+    try:
+         cl.sendMessage(msg)
+    except Exception as error:
+        print error
+
+def removeAllMessages(self, lastMessageId):
+     return self._client.removeAllMessages(0, lastMessageId)
 #---------------------------[AutoLike-nya]---------------------------#
 def autolike():
      for zx in range(0,100):
@@ -124,7 +419,7 @@ def autolike():
         if hasil['result']['posts'][zx]['postInfo']['liked'] == False:
           try:    
             cl.like(hasil['result']['posts'][zx]['userInfo']['mid'],hasil['result']['posts'][zx]['postInfo']['postId'],likeType=1002)
-	    cl.comment(hasil['result']['posts'][zx]['userInfo']['mid'],hasil['result']['posts'][zx]['postInfo']['postId'],"AutoLike by Aan jutawan\n\ninstagram.com/Alrahmanto_selebgram")
+	    cl.comment(hasil['result']['posts'][zx]['userInfo']['mid'],hasil['result']['posts'][zx]['postInfo']['postId'],"Autolike By Anarchy Team Bots")
             print "Like"
           except:
             pass
@@ -305,6 +600,7 @@ def bot(op):
                             cl.rejectGroupInvitation(op.param1)
                         else:
                             cl.acceptGroupInvitation(op.param1)
+                            cl.sendText(msg.to,"Terimakasih Telah Mengundang Bots Anarchy\n\nJika Ada Masalah Silahkan Hubungi line.me/ti/p/~biohazard__")
                     else:
                         cl.acceptGroupInvitation(op.param1)
                 elif wait["autoCancel"]["on"] == True:
@@ -325,10 +621,16 @@ def bot(op):
 	if op.type == 15:
 	    if op.param2 in Bots:
 		return
-	    kc.sendText(op.param1, "Good Bye....")
-	    ki.sendText(op.param1, "Dadaah....")
+	    cl.sendText(op.param1, "Good Bye....")
+	    cl.sendText(op.param1, "Dadaah....")
 	    print "MemberLeft"
 
+        if op.type == 17:
+               if op.param2 in Bots:
+                 return
+               ginfo = cl.getGroup(op.param1)
+               cl.sendText(op.param1, "╔═════════════\n║Selamat Datang Di  " + str(ginfo.name) + "\n╠═════════════\n" + "║Founder =>>> " + str(ginfo.name) + " :\n║" + ginfo.creator.displayName + "\n╠═════════════\n" + "║Selamat Berlanja di indomart \n╠═════════════\n║NO BAPER YANG BAPER HIDUNGNYA PESEK \n╚═════════════")
+               print "MEMBER HAS JOIN THE GROUP"
 #------------------------------------------------------
 
         #------Joined User Kick start------#
@@ -794,10 +1096,27 @@ def bot(op):
         if op.type == 26:
 	    msg = op.message
 
-	    if 'MENTION' in mid:
-    		cl.sendText(msg.to, '===AUTO_RESPON===\nCie ngetag bot')
-	    else:
-      		pass
+            if "MENTION" in msg.contentMetadata.keys() != None:
+                 if wait['detectMention'] == True:
+                     contact = kr.getContact(msg.from_)
+                     cName = contact.displayName
+                     balas = ["Apa sh apa tag tag",cName + "Gausah Tag Tag Mending Gift Tikel","Fix Yang Tag Fans", "Pc aja klo penting","Diemmm!!!","knp?, " + cName, "apasi?, " + cName + "?", "pulang gih, " + cName + "?","aya naon, ?" + cName]
+                     ret_ = "." + random.choice(balas)
+                     name = re.findall(r'@(\w+)', msg.text)
+                     mention = ast.literal_eval(msg.contentMetadata["MENTION"])
+                     mentionees = mention['MENTIONEES']
+                     for mention in mentionees:
+                           if mention['M'] in Bots:
+                                  kr.sendText(msg.to,ret_)
+                                  msg.contentType = 7
+                                  msg.text = None
+                                  msg.contentMetadata = {
+                                                       "STKID": "11866873",
+                                                       "STKPKGID": "1293049",
+                                                       "STKVER": "1" }
+                                  kr.sendMessage(msg)
+                                  break            
+                   
             if msg.toType == 1:
                 if wait["leaveRoom"] == True:
                     cl.leaveRoom(msg.to)
@@ -1219,11 +1538,11 @@ def bot(op):
                         cl.sendText(msg.to,"Can not be used outside the group")
                     else:
                         cl.sendText(msg.to,"Not for use less than group")
-            elif "/idgrup" == msg.text:
+            elif "/groupid" == msg.text:
                 cl.sendText(msg.to,msg.to)
-            elif "My mid" == msg.text:
+            elif "/myid" == msg.text:
                 random.choice(KAC).sendText(msg.to, msg.from_)
-            elif "Mid RA" == msg.text:
+            elif "Mid ATB" == msg.text:
                 cl.sendText(msg.to,mid)
                 ki.sendText(msg.to,Amid)
                 kk.sendText(msg.to,Bmid)
@@ -1335,7 +1654,7 @@ def bot(op):
                 cl.sendText(msg.to,"line://home/post?userMid="+mid+"&postId="+cl.new_post(tl_text)["result"]["post"]["postInfo"]["postId"]) 
 
 	    elif "Cn " in msg.text:
-              if msg.from_ in admin:
+              if msg.from_ in admin or adminsa:
                 string = msg.text.replace("Cn ","")
                 if len(string.decode('utf-8')) <= 20:
                     profile = cl.getProfile()
@@ -1847,6 +2166,16 @@ def bot(op):
                     cl.sendText(msg.to,song[5])
                     print "[Command] Lirik"
 
+            elif "/zodiak " in msg.text:
+                tanggal = msg.text.replace("zodiak ","")
+                r=requests.get('https://script.google.com/macros/exec?service=AKfycbw7gKzP-WYV2F5mc9RaR7yE3Ve1yN91Tjs91hp_jHSE02dSv9w&nama=ervan&tanggal='+tanggal)
+                data=r.text
+                data=json.loads(data)
+                lahir = data["data"]["lahir"]
+                usia = data["data"]["usia"]
+                ultah = data["data"]["ultah"]
+                zodiak = data["data"]["zodiak"]
+                cl.sendText(msg.to,"Tanggal Lahir: "+lahir+"\n\nUsia: "+usia+"\n\nUltah: "+ultah+"\n\nZodiak: "+zodiak)
 
 	    elif msg.text in ["/gcreator"]:
               if msg.toType == 2:
@@ -1861,44 +2190,187 @@ def bot(op):
                     cl.sendText(msg.to, "Group Creator : " + gCreator1)
                     cl.sendMessage(msg)
 
-	    elif "kedapkedip " in msg.text.lower():
+	    elif "/kedapkedip " in msg.text.lower():
                 txt = msg.text.replace("kedapkedip ", "")
                 cl.kedapkedip(msg.to,txt)
 
+           elif "/youtube " in msg.text.lower():
+                 query = msg.text.lower().replace("/youtube ","")
+                 with requests.session() as s:
+                     s.headers['user-agent'] = 'Mozilla/5.0'
+                     url    = 'http://www.youtube.com/results'
+                     params = {'search_query': query}
+                     r    = s.get(url, params=params)
+                     soup = BeautifulSoup(r.content, 'html5lib')
+                     for a in soup.select('.yt-lockup-title > a[title]'):
+                         if '&List' not in a['href']:
+                             cl.sendText(msg.to,'Judul : ' + a['title'] + '\nLink : ' + 'http://www.youtube.com' + a['href']
+
 #--------------ListGroup------------------#
             elif msg.text in ["List grup"]:
-              if msg.from_ in admin:
+              if msg.from_ in admin or adminsa:
                 gid = cl.getGroupIdsJoined()
                 h = ""
 		for i in gid:
                     h += "[🛫] %s\n" % (cl.getGroup(i).name +"→["+str(len(cl.getGroup(i).members))+"]")
                 cl.sendText(msg.to,"▒▒▓█[List Grup]█▓▒▒\n"+ h +"Total Group ="+"["+str(len(gid))+"]")
 
+            elif msg.text.lower() == 'runtime':
+                eltime = time.time() - mulai
+                van = "Bot sudah berjalan selama "+waktu(eltime)
+                cl.sendText(msg.to,van)
+#-----------------------------------------
+            elif msg.text in ["Restart"]:
+                if msg.from_ in owner:
+                    cl.sendText(msg.to, "Bot has been restarted")
+                    restart_program()
+                    print "@Restart"
+                
+            elif "/image " in msg.text:
+                search = msg.text.replace("image ","")
+                url = 'https://www.google.com/search?espv=2&biw=1366&bih=667&tbm=isch&oq=kuc&aqs=mobile-gws-lite.0.0l5&q=' + search
+                raw_html = (download_page(url))
+                items = []
+                items = items + (_images_get_all_items(raw_html))
+                path = random.choice(items)
+                print path
+                try:
+                    cl.sendImageWithURL(msg.to,path)
+                except:
+                    pass
+
+            elif '/ig ' in msg.text.lower():
+                try:
+                    instagram = msg.text.lower().replace("ig ","")
+                    html = requests.get('https://www.instagram.com/' + instagram + '/?')
+                    soup = BeautifulSoup(html.text, 'html5lib')
+                    data = soup.find_all('meta', attrs={'property':'og:description'})
+                    text = data[0].get('content').split()
+                    data1 = soup.find_all('meta', attrs={'property':'og:image'})
+                    text1 = data1[0].get('content').split()
+                    user = "Name: " + text[-2] + "\n"
+                    user1 = "Username: " + text[-1] + "\n"
+                    followers = "Followers: " + text[0] + "\n"
+                    following = "Following: " + text[2] + "\n"
+                    post = "Post: " + text[4] + "\n"
+                    link = "Link: " + "https://www.instagram.com/" + instagram
+                    detail = "========INSTAGRAM INFO USER========\n"
+                    details = "\n========INSTAGRAM INFO USER========"
+                    cl.sendText(msg.to, detail + user + user1 + followers + following + post + link + details)
+                    cl.sendImageWithURL(msg.to, text1[0])
+                except Exception as njer:
+                	cl.sendText(msg.to, str(njer)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            elif "/tr-id " in msg.text:
+                nk0 = msg.text.replace("/tr-id ","")
+                nk1 = nk0.lstrip()
+                nk2 = nk1.replace("","")
+                nk3 = nk2.rstrip()
+                _name = nk3
+                trans = translate(_name, 'id')
+                cl.sendText(msg.to,str(trans))
+            elif "/tr-th " in msg.text:
+                nk0 = msg.text.replace("/tr-th ","")
+                nk1 = nk0.lstrip()
+                nk2 = nk1.replace("","")
+                nk3 = nk2.rstrip()
+                _name = nk3
+                trans = translate(_name, 'th')
+                cl.sendText(msg.to,str(trans))
+            elif "/tr-ja " in msg.text:
+                nk0 = msg.text.replace("/tr-ja ","")
+                nk1 = nk0.lstrip()
+                nk2 = nk1.replace("","")
+                nk3 = nk2.rstrip()
+                _name = nk3
+                trans = translate(_name, 'ja')
+                cl.sendText(msg.to,str(trans))
+            elif "/tr-en " in msg.text:
+                nk0 = msg.text.replace("/tr-en ","")
+                nk1 = nk0.lstrip()
+                nk2 = nk1.replace("","")
+                nk3 = nk2.rstrip()
+                _name = nk3
+                trans = translate(_name, 'en')
+                cl.sendText(msg.to,str(trans))
+            elif "/tr-ms " in msg.text:
+                nk0 = msg.text.replace("/tr-ms ","")
+                nk1 = nk0.lstrip()
+                nk2 = nk1.replace("","")
+                nk3 = nk2.rstrip()
+                _name = nk3
+                trans = translate(_name, 'ms')
+                cl.sendText(msg.to,str(trans))
+            elif "/tr-it " in msg.text:
+                nk0 = msg.text.replace("/tr-it ","")
+                nk1 = nk0.lstrip()
+                nk2 = nk1.replace("","")
+                nk3 = nk2.rstrip()
+                _name = nk3
+                trans = translate(_name, 'it')
+                cl.sendText(msg.to,str(trans))
+            elif "/tr-tr " in msg.text:
+                nk0 = msg.text.replace("/tr-tr ","")
+                nk1 = nk0.lstrip()
+                nk2 = nk1.replace("","")
+                nk3 = nk2.rstrip()
+                _name = nk3
+                trans = translate(_name, 'tr')
+                cl.sendText(msg.to,str(trans))
+            elif "/tr-my " in msg.text:
+                nk0 = msg.text.replace("/tr-my ","")
+                nk1 = nk0.lstrip()
+                nk2 = nk1.replace("","")
+                nk3 = nk2.rstrip()
+                _name = nk3
+                trans = translate(_name, 'my')
+                cl.sendText(msg.to,str(trans))
+            elif "/tr-af " in msg.text:
+                nk0 = msg.text.replace("/tr-af ","")
+                nk1 = nk0.lstrip()
+                nk2 = nk1.replace("","")
+                nk3 = nk2.rstrip()
+                _name = nk3
+                trans = translate(_name, 'af')
+                cl.sendText(msg.to,str(trans))
+            elif "/tr-sq " in msg.text:
+                nk0 = msg.text.replace("/tr-sq ","")
+                nk1 = nk0.lstrip()
+                nk2 = nk1.replace("","")
+                nk3 = nk2.rstrip()
+                _name = nk3
+                trans = translate(_name, 'sq')
+                cl.sendText(msg.to,str(trans))
+            elif "/tr-am " in msg.text:
+                nk0 = msg.text.replace("/tr-am ","")
+                nk1 = nk0.lstrip()
+                nk2 = nk1.replace("","")
+                nk3 = nk2.rstrip()
+                _name = nk3
+                trans = translate(_name, 'am')
+                cl.sendText(msg.to,str(trans))
+            elif "/tr-ar " in msg.text:
+                nk0 = msg.text.replace("/tr-ar ","")
+                nk1 = nk0.lstrip()
+                nk2 = nk1.replace("","")
+                nk3 = nk2.rstrip()
+                _name = nk3
+                trans = translate(_name, 'ar')
+                cl.sendText(msg.to,str(trans))
+            elif "/tr-hy " in msg.text:
+                nk0 = msg.text.replace("/tr-hy ","")
+                nk1 = nk0.lstrip()
+                nk2 = nk1.replace("","")
+                nk3 = nk2.rstrip()
+                _name = nk3
+                trans = translate(_name, 'hy')
+                cl.sendText(msg.to,str(trans))
 #-------------------#
 
-	    elif "Steal dp @" in msg.text:
+	    elif "/steal dp @" in msg.text:
 		print "[Command]dp executing"
-                _name = msg.text.replace("Steal dp @","")
+                _name = msg.text.replace("/steal dp @","")
                 _nametarget = _name.rstrip(' ')
                 gs = cl.getGroup(msg.to)
                 targets = []
@@ -1918,9 +2390,9 @@ def bot(op):
                 print "[Command]dp executed"
 
 
-	    elif "Steal home @" in msg.text:
+	    elif "/steal home @" in msg.text:
                 print "[Command]dp executing"
-                _name = msg.text.replace("Steal home @","")
+                _name = msg.text.replace("/steal home @","")
                 _nametarget = _name.rstrip(' ')
                 gs = cl.getGroup(msg.to)
                 targets = []
@@ -1981,14 +2453,14 @@ def bot(op):
                         cl.sendText(msg.to, str(njer))
 
 	    elif "Gbc " in msg.text:
-	      if msg.from_ in admin:
+	      if msg.from_ in admin or adminsa:
 		bctxt = msg.text.replace("Gbc ", "")
     		n = cl.getGroupIdsJoined()
     	        for manusia in n:
 	            cl.sendText(manusia, (bctxt))
 
 	    elif "Cbc " in msg.text:
-	      if msg.from_ in admin:
+	      if msg.from_ in admin or adminsa:
     		bctxt = msg.text.replace("Cbc ", "")
     		t = cl.getAllContactIds()
     		for manusia in t:
@@ -2016,8 +2488,8 @@ def bot(op):
                     cl.sendText(msg.to,'Error.')
 
 	#-----------KERANG---------#
-	    elif "Apakah " in msg.text:
-    		tanya = msg.text.replace("Apakah ","")
+	    elif "/apakah " in msg.text:
+    		tanya = msg.text.replace("/apakah ","")
     		jawab = ("Iya","Tidak")
     		jawaban = random.choice(jawab)
 		tts = gTTS(text=jawaban, lang='id')
@@ -2025,25 +2497,55 @@ def bot(op):
     		cl.sendAudio(msg.to,'tts.mp3')
 
 #----------------------
-            elif "Dosa @" in msg.text:
-                tanya = msg.text.replace("Dosa @","")
+            elif "/dosa @" in msg.text:
+                tanya = msg.text.replace("/dosa @","")
                 jawab = ("60%","70%","80%","90%","100%","Tak terhingga")
                 jawaban = random.choice(jawab)
                 cl.sendText(msg.to,"Dosanya " + tanya + "adalah " + jawaban + " Banyak banyak tobat Nak ")
 #----------------------
-	    elif "Pahala @" in msg.text:
-                tanya = msg.text.replace("Pahala @","")
+	    elif "/pahala @" in msg.text:
+                tanya = msg.text.replace("/pahala @","")
                 jawab = ("0%","20%","40%","50%","60%","Tak ada")
                 jawaban = random.choice(jawab)
                 cl.sendText(msg.to,"Pahalanya " + tanya + "adalah " + jawaban + "\nTobatlah nak")
 
+             elif "/info saya" in msg.text:
+                kelamin = ("Waria","Laki-laki","Perempuan","Tidak Diketahui","Bencong")
+                wajah = ("Standar","Ganteng","Cantik","Beruk","Hancur")
+                status = ("Menikah","Pacaran","Jones")
+                k = random.choice(kelamin)
+                w = random.choice(wajah)
+                s = random.choice(status)
+                cl.sendText(msg.to,"â€¢ Nama : "+cl.getContact(msg.from_).displayName+"\nâ€¢ Kelamin : "+k+"\nâ€¢ Wajah : "+w+"\nâ€¢ Status Kehidupan : "+s)
+
+            elif "/cuaca " in msg.text:
+              if msg.from_ in staff:
+                            separate = msg.text.split(" ")
+                            location = msg.text.replace(separate[0] + " ","")
+                            with requests.session() as web:
+                                web.headers["user-agent"] = random.choice(user_agent)
+                                r = web.get("http://api.corrykalam.net/apicuaca.php?kota={}".format(urllib2.quote(location)))
+                                data = r.text
+                                data = json.loads(data)
+                                if "result" not in data:
+                                    ret_ = "Location : " + data[0].replace("Temperatur di kota ","")
+                                    ret_ += "\nSuhu : " + data[1].replace("Suhu : ","") + " C"
+                                    ret_ += "\nKelembaban : " + data[2].replace("Kelembaban : ","") + " %"
+                                    ret_ += "\nTekanan udara : " + data[3].replace("Tekanan udara : ","") + " HPa"
+                                    ret_ += "\nKecepatan angin : " + data[4].replace("Kecepatan angin : ","") + " m/s"
+                                    ret_ += "\n\nTanggal : " + datetime.now().strftime('%Y-%m-%d')
+                                    ret_ += "\nJam : " + datetime.now().strftime('%H:%M:%S')
+                                else:
+                                    ret_ = "[Weather Status] Error : Location not found"
+                                cl.sendText(msg.to, str(ret_))
+
+
 	#-------------------------------#
 
-	    elif "Steal group" in msg.text:
+	    elif "/image group" in msg.text:
                    group = cl.getGroup(msg.to)
                    path =("http://dl.profile.line-cdn.net/" + group.pictureStatus)
                    cl.sendImageWithURL(msg.to, path)
-
 
          #-------------Fungsi Jam Update Start---------------------#            
             elif msg.text in ["Jam Update"]:
@@ -2098,6 +2600,46 @@ def bot(op):
 		    else:
 			cl.sendText(msg.to, "Ketik 「/set」 dulu kaka...\nHehe")
 
+            elif "setview" in msg.text:
+                subprocess.Popen("echo '' > dataSeen/"+msg.to+".txt", shell=True, stdout=subprocess.PIPE)
+                cl.sendText(msg.to, "Checkpoint checked!")
+                print "@setview"
+
+            elif "viewseen" in msg.text:
+	        lurkGroup = ""
+	        dataResult, timeSeen, contacts, userList, timelist, recheckData = [], [], [], [], [], []
+                with open('dataSeen/'+msg.to+'.txt','r') as rr:
+                    contactArr = rr.readlines()
+                    for v in xrange(len(contactArr) -1,0,-1):
+                        num = re.sub(r'\n', "", contactArr[v])
+                        contacts.append(num)
+                        pass
+                    contacts = list(set(contacts))
+                    for z in range(len(contacts)):
+                        arg = contacts[z].split('|')
+                        userList.append(arg[0])
+                        timelist.append(arg[1])
+                    uL = list(set(userList))
+                    for ll in range(len(uL)):
+                        try:
+                            getIndexUser = userList.index(uL[ll])
+                            timeSeen.append(time.strftime("%H:%M:%S", time.localtime(int(timelist[getIndexUser]) / 1000)))
+                            recheckData.append(userList[getIndexUser])
+                        except IndexError:
+                            conName.append('nones')
+                            pass
+                    contactId = cl.getContacts(recheckData)
+                    for v in range(len(recheckData)):
+                        dataResult.append(contactId[v].displayName + ' ('+timeSeen[v]+')')
+                        pass
+                    if len(dataResult) > 0:
+                        tukang = "List Viewer\n*"
+                        grp = '\n* '.join(str(f) for f in dataResult)
+                        total = '\n\nTotal %i viewers (%s)' % (len(dataResult), datetime.now().strftime('%H:%M:%S') )
+                        cl.sendText(msg.to, "%s %s %s" % (tukang, grp, total))
+                    else:
+                        cl.sendText(msg.to, "Belum ada viewers")
+                    print "@viewseen"
          #----------------Fungsi Join Group Start-----------------------#
             elif msg.text in ["Kuy join","Ayo masuk"]:
               if msg.from_ in admin:
@@ -2183,32 +2725,47 @@ def bot(op):
     #-------------Fungsi Leave Group Finish---------------#
 
     #-------------Fungsi Tag All Start---------------#
+
             elif msg.text in ["/tagall"]:
-                  group = cl.getGroup(msg.to)
-                  nama = [contact.mid for contact in group.members]
-
-                  cb = ""
-                  cb2 = ""
-                  strt = int(0)
-                  akh = int(0)
-                  for md in nama:
-                      akh = akh + int(6)
-
-                      cb += """{"S":"""+json.dumps(str(strt))+""","E":"""+json.dumps(str(akh))+""","M":"""+json.dumps(md)+"},"""
-
-                      strt = strt + int(7)
-                      akh = akh + 1
-                      cb2 += "@nrik \n"
-
-                  cb = (cb[:int(len(cb)-1)])
-                  msg.contentType = 0
-                  msg.text = cb2
-                  msg.contentMetadata ={'MENTION':'{"MENTIONEES":['+cb+']}','EMTVER':'4'}
-
-                  try:
-                      cl.sendMessage(msg)
-                  except Exception as error:
-                      print error
+                              group = cl.getGroup(msg.to)
+                              nama = [contact.mid for contact in group.members]
+                              nm1, nm2, nm3, nm4, jml = [], [], [], [], len(nama)
+                              if jml <= 100:
+                                 mention(msg.to, nama)
+                              if jml > 100 and jml < 200:
+                                 for i in range (0, 99):
+                                        nm1 += [nama[i]]
+                                 mention(msg.to, nm1)
+                                 for j in range (100, len(nama)-1):
+                                        nm2 += [nama[j]]
+                                 mention(msg.to, nm2)
+                              if jml > 200 and jml < 300:
+                                 for i in range (0, 99):
+                                        nm1 += [nama[i]]
+                                 mention(msg.to, nm1)
+                                 for j in range (100, 199):
+                                        nm2 += [nama[j]]
+                                 mention(msg.to, nm2)
+                                 for k in range (200, len(nama)-1):
+                                        nm3 += [nama[k]]
+                                 mention(msg.to, nm3)
+                              if jml > 300 and jml < 400:
+                                 for i in range (0, 99):
+                                        nm1 += [nama[i]]
+                                 mention(msg.to, nm1)
+                                 for j in range (100, 199):
+                                        nm2 += [nama[j]]
+                                 mention(msg.to, nm2)
+                                 for k in range (200, 299):
+                                        nm3 += [nama[k]]
+                                 mention(msg.to, nm3)
+                                 for l in range (300, len(nama)-1):
+                                     nm4 += [nama[l]]
+                                 mention(msg.to, nm4)
+                              cnt = Message()
+                              cnt.text = "Hasil Tag : "+str(jml)
+                              cnt.to = msg.to
+                              cl.sendMessage(cnt)
     #-------------Fungsi Tag All Finish---------------#
 
          #----------------Fungsi Banned Kick Target Start-----------------------#
@@ -2235,7 +2792,7 @@ def bot(op):
          #----------------Fungsi Banned Kick Target Finish----------------------#                
 
             elif "Cleanse" in msg.text:
-              if msg.from_ in admin:
+              if msg.from_ in admin adminsa:
                 if msg.toType == 2:
                     print "ok"
                     _name = msg.text.replace("Cleanse","")
@@ -2269,7 +2826,7 @@ def bot(op):
 
         #----------------Fungsi Kick User Target Start----------------------#
             elif "Nk " in msg.text:
-                  if msg.from_ in admin:
+                  if msg.from_ in admin or adminsa:
                        nk0 = msg.text.replace("Nk ","")
                        nk1 = nk0.lstrip()
                        nk2 = nk1.replace("@","")
@@ -2433,8 +2990,6 @@ def bot(op):
                 cl.sendText(msg.to,"44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.55.44.44.44.44.44.44.44.4444.44.44.4.44.4.44.44.4.440.440.004444.4444.44.33.")
                 kk.sendText(msg.to,"Hinata pekok 􀜁􀅔Har Har􏿿")
                 kc.sendText(msg.to,"Hinata pekok 􀜁􀅔Har Har􏿿")
-            elif msg.text in ["/creator"]:
-                cl.sendText(msg.to,"==========BotCreator==========\n\nĜ̵͑̎I̸̛̽̕A̴̿̀͠N̷̋̿͝Ȁ̵̔̀N̷̋̿͝D̴́͗͘Ȁ̵̔̀\n==>'Instagram.com/gianandaal'<==\n\nWajib follow􀜁􀅔Har Har􏿿")
 
             elif msg.text in ["bobo ah","Bobo dulu ah"]:
                 cl.sendText(msg.to,"Have a nice dream  􀜁􀅔Har Har􏿿")
@@ -2444,10 +2999,30 @@ def bot(op):
                 ki.sendText(msg.to,"Chomel pekok 􀜁􀅔Har Har􏿿")
                 kk.sendText(msg.to,"Chomel pekok 􀜁􀅔Har Har􏿿")
                 kc.sendText(msg.to,"Chomel pekok 􀜁􀅔Har Har􏿿")
-            elif msg.text in ["#welcome"]:
-                cl.sendText(msg.to,"Selamat datang")
-                cl.sendText(msg.to,"Jangan nakal ok!")
+            elif msg.text in ["Hai","hai"]:
+                cl.sendText(msg.to,"hai juga")
+            elif msg.text in ["Sayang","sayang"]:
+                cl.sendText(msg.to,"Iya sayang")
+            elif msg.text in ["yang","Yang","yank","Yank"]:
+                cl.sendText(msg.to,"Iya sayang")
+            elif msg.text in ["Typo","typo"]:
+                cl.sendText(msg.to,"Ciee Typo")
+            elif msg.text in ["Aku","aku"]:
+                cl.sendText(msg.to,"diem kamvret")
+            elif msg.text in ["Anjing","anjing"]:
+                cl.sendText(msg.to,"Nape Lu Anjing :v")
+            elif msg.text in ["Dih","dih"]:
+                cl.sendText(msg.to,"dih dah duh deh doh")
+            elif msg.text in ["Asu","asu"]:
+                cl.sendText(msg.to,"Lu kali yang asu")
+            elif msg.text in ["Asw","asw"]:
+                cl.sendText(msg.to,"Asuee asueeeeeeeeeeee")
 #-----------------------------------------------
+            elif msg.text in ["PING","Ping","ping"]:
+                cl.sendText(msg.to,"PONG 􀨁􀄻double thumbs up􏿿􀜁􀅔Har Har􏿿")
+                kk.sendText(msg.to,"PONG 􀨁􀄻double thumbs up􏿿􀜁􀅔Har Har􏿿")
+                kc.sendText(msg.to,"PONG 􀨁􀄻double thumbs up􏿿􀜁􀅔Har Har􏿿")
+
             elif msg.text in ["PING","Ping","ping"]:
                 cl.sendText(msg.to,"PONG 􀨁􀄻double thumbs up􏿿􀜁􀅔Har Har􏿿")
                 kk.sendText(msg.to,"PONG 􀨁􀄻double thumbs up􏿿􀜁􀅔Har Har􏿿")
@@ -2582,20 +3157,54 @@ def bot(op):
                     except:
                         pass
 
-	if op.type == 55:
-	    try:
-		if op.param1 in wait2['readPoint']:
-		    Name = cl.getContact(op.param2).displayName
-		    if Name in wait2['readMember'][op.param1]:
-			pass
-		    else:
-			wait2['readMember'][op.param1] += "\n・ " + Name + datetime.today().strftime(' [%d - %H:%M:%S]')
-			wait2['ROM'][op.param1][op.param2] = "・ " + Name
-			wait2['setTime'][msg.to] = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
-		else:
-		    pass
-	    except:
-		pass
+#	if op.type == 55:
+#	    try:
+#		if op.param1 in wait2['readPoint']:
+#		    Name = cl.getContact(op.param2).displayName
+#		    if Name in wait2['readMember'][op.param1]:
+#			pass
+#		    else:
+#			wait2['readMember'][op.param1] += "\n・ " + Name + datetime.today().strftime(' [%d - %H:%M:%S]')
+#			wait2['ROM'][op.param1][op.param2] = "・ " + Name
+#			wait2['setTime'][msg.to] = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+#		else:
+#		    pass
+#	    except:
+#		pass
+#
+#        if op.type == 59:
+#            print op
+
+
+#    except Exception as error:
+#        print error
+
+
+#def a2():
+#    now2 = datetime.now()
+#    nowT = datetime.strftime(now2,"%M")
+#    if nowT[14:] in ["10","20","30","40","50","00"]:
+#        return False
+#    else:
+#        return True
+
+
+        if op.type == 55:
+            print "[NOTIFIED_READ_MESSAGE]"
+            try:
+                if op.param1 in wait2['readPoint']:
+                    Nama = cl.getContact(op.param2).displayName
+                    if Nama in wait2['readMember'][op.param1]:
+                        pass
+                    else:
+                        wait2['readMember'][op.param1] += "\n-> " + Nama
+                        wait2['ROM'][op.param1][op.param2] = "-> " + Nama
+                        wait2['setTime'][msg.to] = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+                else:
+                    cl.sendText
+            except:
+                pass
+
 
         if op.type == 59:
             print op
